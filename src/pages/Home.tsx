@@ -57,7 +57,7 @@ const stats = [
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div id="home" className="min-h-screen bg-background">
       <Navigation />
       
       {/* Hero Section */}
