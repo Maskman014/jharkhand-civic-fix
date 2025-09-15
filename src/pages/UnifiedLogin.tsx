@@ -11,8 +11,8 @@ import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 const UnifiedLogin = () => {
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [citizenData, setCitizenData] = useState({ username: '', phone: '' });
-  const [adminData, setAdminData] = useState({ userId: '' });
-  const [municipalData, setMunicipalData] = useState({ userId: '' });
+  const [adminData, setAdminData] = useState({ userId: '', password: '' });
+  const [municipalData, setMunicipalData] = useState({ userId: '', password: '' });
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -33,7 +33,7 @@ const UnifiedLogin = () => {
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminData.userId) {
+    if (adminData.userId && adminData.password) {
       sessionStorage.setItem('user', JSON.stringify({ 
         role: 'admin', 
         userId: adminData.userId 
@@ -45,7 +45,7 @@ const UnifiedLogin = () => {
 
   const handleMunicipalLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (municipalData.userId) {
+    if (municipalData.userId && municipalData.password) {
       sessionStorage.setItem('user', JSON.stringify({ 
         role: 'municipal', 
         userId: municipalData.userId 
@@ -92,14 +92,14 @@ const UnifiedLogin = () => {
         <div className="text-center mb-16">
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8">
             <h1 className="text-5xl font-bold text-white mb-6">
-              झारखंड नागरिक समस्या रिपोर्टिंग सिस्टम
-            </h1>
-            <h2 className="text-3xl font-semibold text-white/90 mb-4">
               Jharkhand Civic Issue Reporting System
+            </h1>
+            <h2 className="text-2xl font-medium text-white/90 mb-4">
+              Government of Jharkhand Official Portal
             </h2>
             <p className="text-xl text-white/80 max-w-4xl mx-auto">
-              सरकारी पोर्टल - नागरिक समस्याओं की रिपोर्ट करें और प्रगति को ट्रैक करें<br/>
-              Government Portal - Report civic issues, track progress, and help improve our communities
+              Report civic issues, track progress, and help improve our communities together.<br/>
+              <span className="text-lg text-white/70">This portal is accessible to all citizens of Jharkhand</span>
             </p>
           </div>
         </div>
@@ -113,8 +113,8 @@ const UnifiedLogin = () => {
               <div className="mx-auto w-20 h-20 bg-accent/20 border-2 border-accent rounded-full flex items-center justify-center mb-4">
                 <Users className="h-10 w-10 text-accent" />
               </div>
-              <CardTitle className="text-2xl font-bold">नागरिक / Citizen</CardTitle>
-              <CardDescription className="text-lg">नागरिक समस्याओं की रिपोर्ट करें<br/>Report civic issues in your area</CardDescription>
+              <CardTitle className="text-2xl font-bold">Citizen / User</CardTitle>
+              <CardDescription className="text-lg">Report civic issues in your area</CardDescription>
             </CardHeader>
             <CardContent>
               {activeForm !== 'citizen' ? (
@@ -168,8 +168,8 @@ const UnifiedLogin = () => {
               <div className="mx-auto w-20 h-20 bg-primary/20 border-2 border-primary rounded-full flex items-center justify-center mb-4">
                 <Shield className="h-10 w-10 text-primary" />
               </div>
-              <CardTitle className="text-2xl font-bold">प्रशासक / Administrator</CardTitle>
-              <CardDescription className="text-lg">सिस्टम प्रशासन और निगरानी<br/>System administration and oversight</CardDescription>
+              <CardTitle className="text-2xl font-bold">Administrator</CardTitle>
+              <CardDescription className="text-lg">System administration and oversight</CardDescription>
             </CardHeader>
             <CardContent>
               {activeForm !== 'admin' ? (
@@ -182,7 +182,7 @@ const UnifiedLogin = () => {
               ) : (
                 <form onSubmit={handleAdminLogin} className="space-y-6">
                   <div>
-                    <Label htmlFor="admin-userid" className="text-base font-semibold">User ID / यूजर आईडी</Label>
+                    <Label htmlFor="admin-userid" className="text-base font-semibold">User ID</Label>
                     <Input 
                       id="admin-userid"
                       type="text"
@@ -193,15 +193,27 @@ const UnifiedLogin = () => {
                       placeholder="Enter your User ID"
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="admin-password" className="text-base font-semibold">Password</Label>
+                    <Input 
+                      id="admin-password"
+                      type="password"
+                      value={adminData.password}
+                      onChange={(e) => setAdminData({...adminData, password: e.target.value})}
+                      required
+                      className="h-12 text-lg"
+                      placeholder="Enter your Password"
+                    />
+                  </div>
                   <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark">Login / लॉगिन</Button>
+                    <Button type="submit" className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark">Login</Button>
                     <Button 
                       type="button" 
                       variant="outline" 
                       onClick={() => setActiveForm(null)}
                       className="flex-1 h-12 text-lg"
                     >
-                      Cancel / रद्द करें
+                      Cancel
                     </Button>
                   </div>
                 </form>
@@ -215,8 +227,8 @@ const UnifiedLogin = () => {
               <div className="mx-auto w-20 h-20 bg-warning/20 border-2 border-warning rounded-full flex items-center justify-center mb-4">
                 <Building2 className="h-10 w-10 text-warning" />
               </div>
-              <CardTitle className="text-2xl font-bold">नगर निगम / Municipality</CardTitle>
-              <CardDescription className="text-lg">नगरपालिका कर्मचारी और अधिकारी<br/>Municipal workers and officials</CardDescription>
+              <CardTitle className="text-2xl font-bold">Municipality Head & Co</CardTitle>
+              <CardDescription className="text-lg">Municipal workers and officials</CardDescription>
             </CardHeader>
             <CardContent>
               {activeForm !== 'municipal' ? (
@@ -229,7 +241,7 @@ const UnifiedLogin = () => {
               ) : (
                 <form onSubmit={handleMunicipalLogin} className="space-y-6">
                   <div>
-                    <Label htmlFor="municipal-userid" className="text-base font-semibold">User ID / यूजर आईडी</Label>
+                    <Label htmlFor="municipal-userid" className="text-base font-semibold">User ID</Label>
                     <Input 
                       id="municipal-userid"
                       type="text"
@@ -240,15 +252,27 @@ const UnifiedLogin = () => {
                       placeholder="Enter your User ID"
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="municipal-password" className="text-base font-semibold">Password</Label>
+                    <Input 
+                      id="municipal-password"
+                      type="password"
+                      value={municipalData.password}
+                      onChange={(e) => setMunicipalData({...municipalData, password: e.target.value})}
+                      required
+                      className="h-12 text-lg"
+                      placeholder="Enter your Password"
+                    />
+                  </div>
                   <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1 h-12 text-lg bg-warning hover:bg-warning/90">Login / लॉगिन</Button>
+                    <Button type="submit" className="flex-1 h-12 text-lg bg-warning hover:bg-warning/90">Login</Button>
                     <Button 
                       type="button" 
                       variant="outline" 
                       onClick={() => setActiveForm(null)}
                       className="flex-1 h-12 text-lg"
                     >
-                      Cancel / रद्द करें
+                      Cancel
                     </Button>
                   </div>
                 </form>
