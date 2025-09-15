@@ -14,7 +14,13 @@ const ReportIssueForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const issueName = location.state?.issueName || issueId?.replace('-', ' ') || 'Issue';
+  // Handle the "others" case and format issue names properly
+  const formatIssueName = (id: string) => {
+    if (id === 'others') return 'Other Issue';
+    return id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+  
+  const issueName = location.state?.issueName || formatIssueName(issueId || 'issue');
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
   
   const [formData, setFormData] = useState({
@@ -192,14 +198,25 @@ const ReportIssueForm = () => {
               {/* Problem Name */}
               <div>
                 <Label htmlFor="problemName">Problem Name</Label>
-                <Input
-                  id="problemName"
-                  type="text"
-                  value={formData.problemName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, problemName: e.target.value }))}
-                  className="bg-gray-50"
-                  readOnly
-                />
+                {issueId === 'others' ? (
+                  <Input
+                    id="problemName"
+                    type="text"
+                    value={formData.problemName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, problemName: e.target.value }))}
+                    placeholder="Enter the type of issue you want to report"
+                    required
+                  />
+                ) : (
+                  <Input
+                    id="problemName"
+                    type="text"
+                    value={formData.problemName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, problemName: e.target.value }))}
+                    className="bg-gray-50"
+                    readOnly
+                  />
+                )}
               </div>
 
               {/* Description */}

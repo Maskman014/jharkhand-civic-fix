@@ -10,9 +10,11 @@ import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const UnifiedLogin = () => {
   const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [showPasswordForm, setShowPasswordForm] = useState<{ type: string; userId: string } | null>(null);
   const [citizenData, setCitizenData] = useState({ username: '', phone: '' });
-  const [adminData, setAdminData] = useState({ userId: '', password: '' });
-  const [municipalData, setMunicipalData] = useState({ userId: '', password: '' });
+  const [adminUserId, setAdminUserId] = useState('');
+  const [municipalUserId, setMunicipalUserId] = useState('');
+  const [password, setPassword] = useState('');
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -30,6 +32,130 @@ const UnifiedLogin = () => {
       navigate('/user-dashboard');
     }
   };
+
+  const handleAdminUserIdSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminUserId) {
+      setShowPasswordForm({ type: 'admin', userId: adminUserId });
+    }
+  };
+
+  const handleMunicipalUserIdSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (municipalUserId) {
+      setShowPasswordForm({ type: 'municipal', userId: municipalUserId });
+    }
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password && showPasswordForm) {
+      if (showPasswordForm.type === 'admin') {
+        sessionStorage.setItem('user', JSON.stringify({ 
+          role: 'admin', 
+          userId: showPasswordForm.userId 
+        }));
+        toast({ title: "Admin Login Successful", description: "Welcome to admin dashboard!" });
+        navigate('/admin-dashboard');
+      } else if (showPasswordForm.type === 'municipal') {
+        sessionStorage.setItem('user', JSON.stringify({ 
+          role: 'municipal', 
+          userId: showPasswordForm.userId 
+        }));
+        toast({ title: "Municipal Login Successful", description: "Welcome to municipal dashboard!" });
+        navigate('/municipality-dashboard');
+      }
+    }
+  };
+
+  const handleBackToUserIdForm = () => {
+    setShowPasswordForm(null);
+    setPassword('');
+  };
+
+  // If showing password form, render that instead
+  if (showPasswordForm) {
+    return (
+      <div 
+        className="min-h-screen relative"
+        style={{
+          backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        {/* Navigation Bar */}
+        <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-primary/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-20 items-center">
+              <div className="flex items-center space-x-4">
+                <div className="bg-primary p-2 rounded-lg">
+                  <Shield className="h-10 w-10 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-primary">Government of Jharkhand</h1>
+                  <p className="text-sm text-muted-foreground">Civic Issue Reporting Portal</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-md mx-auto px-4 py-16">
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
+            <CardHeader className="text-center">
+              <div className={`mx-auto w-20 h-20 ${showPasswordForm.type === 'admin' ? 'bg-primary/20 border-primary' : 'bg-warning/20 border-warning'} border-2 rounded-full flex items-center justify-center mb-4`}>
+                {showPasswordForm.type === 'admin' ? 
+                  <Shield className="h-10 w-10 text-primary" /> : 
+                  <Building2 className="h-10 w-10 text-warning" />
+                }
+              </div>
+              <CardTitle className="text-2xl font-bold">
+                {showPasswordForm.type === 'admin' ? 'Administrator' : 'Municipality Head & Co'}
+              </CardTitle>
+              <CardDescription className="text-lg">
+                Welcome, {showPasswordForm.userId}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handlePasswordSubmit} className="space-y-6">
+                <div>
+                  <Label htmlFor="password" className="text-base font-semibold">Password</Label>
+                  <Input 
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-12 text-lg"
+                    placeholder="Enter your Password"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex space-x-2">
+                  <Button 
+                    type="submit" 
+                    className={`flex-1 h-12 text-lg ${showPasswordForm.type === 'admin' ? 'bg-primary hover:bg-primary-dark' : 'bg-warning hover:bg-warning/90'}`}
+                  >
+                    Login
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleBackToUserIdForm}
+                    className="flex-1 h-12 text-lg"
+                  >
+                    Back
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,33 +306,21 @@ const UnifiedLogin = () => {
                   Login as Admin
                 </Button>
               ) : (
-                <form onSubmit={handleAdminLogin} className="space-y-6">
+                <form onSubmit={handleAdminUserIdSubmit} className="space-y-6">
                   <div>
                     <Label htmlFor="admin-userid" className="text-base font-semibold">User ID</Label>
                     <Input 
                       id="admin-userid"
                       type="text"
-                      value={adminData.userId}
-                      onChange={(e) => setAdminData({...adminData, userId: e.target.value})}
+                      value={adminUserId}
+                      onChange={(e) => setAdminUserId(e.target.value)}
                       required
                       className="h-12 text-lg"
                       placeholder="Enter your User ID"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="admin-password" className="text-base font-semibold">Password</Label>
-                    <Input 
-                      id="admin-password"
-                      type="password"
-                      value={adminData.password}
-                      onChange={(e) => setAdminData({...adminData, password: e.target.value})}
-                      required
-                      className="h-12 text-lg"
-                      placeholder="Enter your Password"
-                    />
-                  </div>
                   <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark">Login</Button>
+                    <Button type="submit" className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark">Continue</Button>
                     <Button 
                       type="button" 
                       variant="outline" 
@@ -239,33 +353,21 @@ const UnifiedLogin = () => {
                   Login as Municipal Worker
                 </Button>
               ) : (
-                <form onSubmit={handleMunicipalLogin} className="space-y-6">
+                <form onSubmit={handleMunicipalUserIdSubmit} className="space-y-6">
                   <div>
                     <Label htmlFor="municipal-userid" className="text-base font-semibold">User ID</Label>
                     <Input 
                       id="municipal-userid"
                       type="text"
-                      value={municipalData.userId}
-                      onChange={(e) => setMunicipalData({...municipalData, userId: e.target.value})}
+                      value={municipalUserId}
+                      onChange={(e) => setMunicipalUserId(e.target.value)}
                       required
                       className="h-12 text-lg"
                       placeholder="Enter your User ID"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="municipal-password" className="text-base font-semibold">Password</Label>
-                    <Input 
-                      id="municipal-password"
-                      type="password"
-                      value={municipalData.password}
-                      onChange={(e) => setMunicipalData({...municipalData, password: e.target.value})}
-                      required
-                      className="h-12 text-lg"
-                      placeholder="Enter your Password"
-                    />
-                  </div>
                   <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1 h-12 text-lg bg-warning hover:bg-warning/90">Login</Button>
+                    <Button type="submit" className="flex-1 h-12 text-lg bg-warning hover:bg-warning/90">Continue</Button>
                     <Button 
                       type="button" 
                       variant="outline" 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Construction, Trash2, Lightbulb, Droplets, AlertTriangle, Users } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import potholeImg from "@/assets/pothole-issue.jpg";
 import garbageImg from "@/assets/garbage-issue.jpg";
@@ -62,6 +63,14 @@ const UserDashboard = () => {
       icon: Users,
       color: 'bg-purple-100 text-purple-600',
       image: publicFacilityImg
+    },
+    {
+      id: 'others',
+      name: 'Others',
+      description: 'Report any other civic issues not listed above',
+      icon: MoreHorizontal,
+      color: 'bg-gray-100 text-gray-600',
+      image: publicFacilityImg // Using a placeholder image
     }
   ];
 
