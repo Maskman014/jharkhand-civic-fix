@@ -17,39 +17,40 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 27%;
 
-    /* Civic Blue - Trustworthy government color */
-    --primary: 214 84% 56%;
+    /* Government Blue - Official and trustworthy */
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-dark: 214 84% 46%;
+    --primary-dark: 221 83% 43%;
 
-    /* Light Blue - Secondary actions */
-    --secondary: 214 32% 91%;
-    --secondary-foreground: 215 25% 27%;
+    /* Light Government Blue - Secondary actions */
+    --secondary: 221 32% 91%;
+    --secondary-foreground: 221 25% 27%;
 
     /* Neutral - Muted content */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 221 40% 96%;
+    --muted-foreground: 221 16% 47%;
 
-    /* Success Green - Progress/Resolution */
-    --accent: 142 76% 36%;
+    /* Government Green - Success/Resolution */
+    --accent: 142 71% 45%;
     --accent-foreground: 0 0% 100%;
 
-    /* Warning Orange - Urgent issues */
-    --warning: 25 95% 53%;
+    /* Government Orange - Urgent issues */
+    --warning: 32 95% 44%;
     --warning-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 214 84% 56%;
+    --border: 221 32% 91%;
+    --input: 221 32% 91%;
+    --ring: 221 83% 53%;
 
-    /* Civic gradients and effects */
+    /* Government gradients and effects */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-dark)));
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
-    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.1);
-    --shadow-card: 0 2px 10px hsl(var(--primary) / 0.08);
+    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 2px 15px hsl(var(--primary) / 0.12);
+    --shadow-government: 0 8px 32px hsl(var(--primary) / 0.2);
     
     --radius: 0.75rem;
 
