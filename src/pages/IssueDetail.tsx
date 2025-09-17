@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Calendar, User, Camera, MessageSquare, Clock } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 // Mock data - in real app this would come from API
 const mockIssue = {
@@ -70,7 +71,15 @@ const IssueDetail = () => {
   const statusInfo = statusConfig[issue.status];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
@@ -104,7 +113,7 @@ const IssueDetail = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Description */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle>Issue Description</CardTitle>
               </CardHeader>
@@ -114,7 +123,7 @@ const IssueDetail = () => {
             </Card>
 
             {/* Photos */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Camera className="h-5 w-5" />
@@ -137,7 +146,7 @@ const IssueDetail = () => {
             </Card>
 
             {/* Updates Timeline */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageSquare className="h-5 w-5" />
@@ -173,7 +182,7 @@ const IssueDetail = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Issue Details */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle>Issue Details</CardTitle>
               </CardHeader>
@@ -212,7 +221,7 @@ const IssueDetail = () => {
             </Card>
 
             {/* Location Details */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MapPin className="h-5 w-5" />
@@ -237,7 +246,7 @@ const IssueDetail = () => {
             </Card>
 
             {/* Assigned Department */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <User className="h-5 w-5" />
@@ -250,7 +259,7 @@ const IssueDetail = () => {
             </Card>
 
             {/* Actions */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardContent className="pt-6">
                 <div className="space-y-3">
                   <Button className="w-full" variant="outline">

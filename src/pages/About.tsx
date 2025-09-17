@@ -3,10 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Users, Heart, Target, Award, Mail, MapPin } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
@@ -21,7 +30,7 @@ const About = () => {
 
         {/* Mission Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Target className="h-6 w-6 text-primary" />
@@ -38,7 +47,7 @@ const About = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Heart className="h-6 w-6 text-accent" />
@@ -85,7 +94,7 @@ const About = () => {
                 icon: "📊"
               }
             ].map((item, index) => (
-              <Card key={index} className="text-center border-0 shadow-sm">
+              <Card key={index} className="text-center border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
                 <CardContent className="pt-6">
                   <div className="text-4xl mb-3">{item.icon}</div>
                   <h3 className="font-semibold text-lg mb-2">Step {item.step}: {item.title}</h3>
@@ -97,7 +106,7 @@ const About = () => {
         </div>
 
         {/* Impact Stats */}
-        <div className="bg-primary/5 rounded-lg p-8 mb-12">
+        <div className="bg-white/95 backdrop-blur-sm border-2 border-white/20 rounded-lg p-8 mb-12">
           <h2 className="text-3xl font-bold text-center text-foreground mb-8">Our Impact</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {[
@@ -117,7 +126,7 @@ const About = () => {
 
         {/* Student Team Section */}
         <div className="mb-12">
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 justify-center">
                 <Users className="h-6 w-6 text-primary" />
@@ -191,7 +200,7 @@ const About = () => {
                 icon: "👥"
               }
             ].map((value, index) => (
-              <Card key={index} className="border-0 shadow-sm">
+              <Card key={index} className="border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
                 <CardContent className="pt-6 text-center">
                   <div className="text-3xl mb-3">{value.icon}</div>
                   <h3 className="font-semibold text-lg mb-2">{value.title}</h3>
@@ -204,7 +213,7 @@ const About = () => {
 
         {/* Contact Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Mail className="h-6 w-6 text-primary" />
@@ -229,7 +238,7 @@ const About = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Award className="h-6 w-6 text-accent" />

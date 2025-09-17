@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Filter, Eye, Calendar } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import IssueCard from "@/components/IssueCard";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 // Mock data for issues
 const mockIssues = [
@@ -72,7 +73,15 @@ const Map = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
@@ -110,7 +119,7 @@ const Map = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Map Placeholder */}
           <div className="lg:col-span-2">
-            <Card className="h-[600px] border-0 shadow-lg">
+            <Card className="h-[600px] border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MapPin className="h-5 w-5 text-primary" />
@@ -148,7 +157,7 @@ const Map = () => {
 
           {/* Issues List */}
           <div className="space-y-4">
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader>
                 <CardTitle className="text-lg">Issues List</CardTitle>
               </CardHeader>
@@ -216,7 +225,7 @@ const Map = () => {
         </div>
 
         {/* Legend */}
-        <Card className="mt-6 border-0 shadow-sm">
+        <Card className="mt-6 border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
           <CardContent className="pt-6">
             <h3 className="font-semibold mb-3">Map Legend</h3>
             <div className="flex flex-wrap gap-6">

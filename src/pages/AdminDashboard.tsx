@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Lock, Eye, Edit, Trash2, Filter, Plus, BarChart3, Users, AlertCircle, CheckCircle } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { toast } from "sonner";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 // Mock data for admin dashboard
 const mockIssues = [
@@ -85,12 +86,20 @@ const AdminDashboard = () => {
   // Login form
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-background">
+      <div 
+        className="min-h-screen relative"
+        style={{
+          backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
         <Navigation />
         
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-md mx-auto">
-            <Card className="border-0 shadow-lg">
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardHeader className="text-center">
                 <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                   <Lock className="h-8 w-8 text-primary" />
@@ -136,7 +145,15 @@ const AdminDashboard = () => {
 
   // Admin dashboard
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
@@ -153,7 +170,7 @@ const AdminDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -165,7 +182,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -177,7 +194,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -189,7 +206,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -226,7 +243,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Issues Table */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
           <CardHeader>
             <CardTitle>Issues Management</CardTitle>
           </CardHeader>

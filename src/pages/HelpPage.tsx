@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, HelpCircle } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const HelpPage = () => {
   const navigate = useNavigate();
@@ -44,9 +45,17 @@ const HelpPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-white/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
@@ -66,7 +75,7 @@ const HelpPage = () => {
         
         {/* Introduction */}
         <div className="mb-8">
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <HelpCircle className="h-6 w-6 mr-2 text-blue-600" />
@@ -81,7 +90,7 @@ const HelpPage = () => {
 
         {/* Quick Start Guide */}
         <div className="mb-8">
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle>Quick Start Guide</CardTitle>
             </CardHeader>
@@ -115,7 +124,7 @@ const HelpPage = () => {
 
         {/* FAQ Section */}
         <div className="mb-8">
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle>Frequently Asked Questions</CardTitle>
             </CardHeader>
@@ -134,7 +143,7 @@ const HelpPage = () => {
 
         {/* Contact Information */}
         <div>
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle>Contact Support</CardTitle>
               <CardDescription>

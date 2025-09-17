@@ -10,6 +10,7 @@ import streetlightImg from "@/assets/streetlight-issue.jpg";
 import waterImg from "@/assets/water-issue.jpg";
 import trafficImg from "@/assets/traffic-issue.jpg";
 import publicFacilityImg from "@/assets/public-facility-issue.jpg";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -84,9 +85,17 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       {/* Header */}
-      <div className="bg-card shadow-card border-b border-border">
+      <div className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div>
@@ -119,7 +128,7 @@ const UserDashboard = () => {
             return (
               <Card 
                 key={issue.id}
-                className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 bg-card border-2 hover:border-primary/50"
+                className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 bg-white/95 backdrop-blur-sm border-2 border-white/20 hover:border-primary/50"
                 onClick={() => handleIssueClick(issue.id, issue.name)}
               >
                 <CardHeader className="text-center pb-4">
@@ -149,7 +158,7 @@ const UserDashboard = () => {
         </div>
 
         {/* Help Text */}
-        <div className="mt-16 bg-primary/10 border border-primary/20 rounded-xl p-8">
+        <div className="mt-16 bg-white/95 backdrop-blur-sm border-2 border-white/20 rounded-xl p-8">
           <h3 className="text-2xl font-bold text-primary mb-6">
             How to report an issue:
           </h3>

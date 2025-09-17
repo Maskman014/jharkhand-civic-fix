@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Phone, User, Clock, AlertCircle } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 interface CivicReport {
   id: number;
@@ -72,9 +73,17 @@ const MunicipalityDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div>
@@ -94,7 +103,7 @@ const MunicipalityDashboard = () => {
         
         {/* Summary Cards */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 rounded-lg">
@@ -108,7 +117,7 @@ const MunicipalityDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-yellow-100 rounded-lg">
@@ -124,7 +133,7 @@ const MunicipalityDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-blue-100 rounded-lg">
@@ -140,7 +149,7 @@ const MunicipalityDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-green-100 rounded-lg">
@@ -178,14 +187,14 @@ const MunicipalityDashboard = () => {
         {/* Reports List */}
         <div className="space-y-4">
           {filteredReports.length === 0 ? (
-            <Card>
+            <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
               <CardContent className="p-8 text-center">
                 <p className="text-gray-500">No reports found.</p>
               </CardContent>
             </Card>
           ) : (
             filteredReports.map((report) => (
-              <Card key={report.id} className="hover:shadow-md transition-shadow">
+              <Card key={report.id} className="hover:shadow-md transition-shadow bg-white/95 backdrop-blur-sm border-2 border-white/20">
                 <CardContent className="p-6">
                   <div className="grid md:grid-cols-3 gap-6">
                     
