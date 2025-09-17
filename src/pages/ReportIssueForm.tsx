@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Camera, ArrowLeft, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const ReportIssueForm = () => {
   const { issueId } = useParams();
@@ -135,8 +136,16 @@ const ReportIssueForm = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
+      <div 
+        className="min-h-screen relative flex items-center justify-center"
+        style={{
+          backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.85), rgba(16, 185, 129, 0.85)), url(${jharkhandBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <Card className="w-full max-w-md mx-4 bg-white/95 backdrop-blur-sm border-2 border-white/20">
           <CardHeader className="text-center">
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="h-10 w-10 text-green-600" />
@@ -166,9 +175,17 @@ const ReportIssueForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-white/20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
             <Button variant="ghost" onClick={handleGoBack} className="mr-4">
@@ -186,7 +203,7 @@ const ReportIssueForm = () => {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
+        <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
           <CardHeader>
             <CardTitle className="text-2xl">
               Report {formData.problemName} Issue

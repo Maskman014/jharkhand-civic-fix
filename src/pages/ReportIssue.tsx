@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Camera, Send, CheckCircle } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { toast } from "sonner";
+import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const ReportIssue = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,7 +80,15 @@ const ReportIssue = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-background">
+      <div 
+        className="min-h-screen relative"
+        style={{
+          backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.85), rgba(16, 185, 129, 0.85)), url(${jharkhandBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
         <Navigation />
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto text-center">
@@ -114,7 +123,15 @@ const ReportIssue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
@@ -126,7 +143,7 @@ const ReportIssue = () => {
             </p>
           </div>
 
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Send className="h-5 w-5 text-primary" />
@@ -271,7 +288,7 @@ const ReportIssue = () => {
           </Card>
 
           {/* Information Card */}
-          <Card className="mt-8 bg-primary/5 border-primary/20">
+          <Card className="mt-8 bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardContent className="pt-6">
               <h3 className="font-semibold text-lg mb-3 text-primary">Important Information</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">

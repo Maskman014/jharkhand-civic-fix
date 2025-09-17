@@ -157,29 +157,6 @@ const UnifiedLogin = () => {
     );
   }
 
-  const handleAdminLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminData.userId && adminData.password) {
-      sessionStorage.setItem('user', JSON.stringify({ 
-        role: 'admin', 
-        userId: adminData.userId 
-      }));
-      toast({ title: "Admin Login Successful", description: "Welcome to admin dashboard!" });
-      navigate('/admin-dashboard');
-    }
-  };
-
-  const handleMunicipalLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (municipalData.userId && municipalData.password) {
-      sessionStorage.setItem('user', JSON.stringify({ 
-        role: 'municipal', 
-        userId: municipalData.userId 
-      }));
-      toast({ title: "Municipal Login Successful", description: "Welcome to municipal dashboard!" });
-      navigate('/municipality-dashboard');
-    }
-  };
 
   return (
     <div 
