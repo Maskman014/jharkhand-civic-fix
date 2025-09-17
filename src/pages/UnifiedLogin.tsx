@@ -36,7 +36,12 @@ const UnifiedLogin = () => {
   const handleAdminUserIdSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (adminUserId) {
-      setShowPasswordForm({ type: 'admin', userId: adminUserId });
+      sessionStorage.setItem('user', JSON.stringify({ 
+        role: 'admin', 
+        userId: adminUserId 
+      }));
+      toast({ title: "Admin Login Successful", description: "Welcome to admin dashboard!" });
+      navigate('/admin-dashboard');
     }
   };
 
@@ -213,8 +218,8 @@ const UnifiedLogin = () => {
           {/* Citizen Login */}
           <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader className="text-center">
-              <div className="mx-auto w-20 h-20 bg-accent/20 border-2 border-accent rounded-full flex items-center justify-center mb-4">
-                <Users className="h-10 w-10 text-accent" />
+              <div className="mx-auto w-16 h-16 bg-accent/20 border-2 border-accent rounded-full flex items-center justify-center mb-4">
+                <Users className="h-8 w-8 text-accent" />
               </div>
               <CardTitle className="text-2xl font-bold">Citizen / User</CardTitle>
               <CardDescription className="text-lg">Report civic issues in your area</CardDescription>
@@ -268,8 +273,8 @@ const UnifiedLogin = () => {
           {/* Admin Login */}
           <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader className="text-center">
-              <div className="mx-auto w-20 h-20 bg-primary/20 border-2 border-primary rounded-full flex items-center justify-center mb-4">
-                <Shield className="h-10 w-10 text-primary" />
+              <div className="mx-auto w-16 h-16 bg-primary/20 border-2 border-primary rounded-full flex items-center justify-center mb-4">
+                <Shield className="h-8 w-8 text-primary" />
               </div>
               <CardTitle className="text-2xl font-bold">Administrator</CardTitle>
               <CardDescription className="text-lg">System administration and oversight</CardDescription>
@@ -315,8 +320,8 @@ const UnifiedLogin = () => {
           {/* Municipality Login */}
           <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-2 border-white/20">
             <CardHeader className="text-center">
-              <div className="mx-auto w-20 h-20 bg-warning/20 border-2 border-warning rounded-full flex items-center justify-center mb-4">
-                <Building2 className="h-10 w-10 text-warning" />
+              <div className="mx-auto w-16 h-16 bg-warning/20 border-2 border-warning rounded-full flex items-center justify-center mb-4">
+                <Building2 className="h-8 w-8 text-warning" />
               </div>
               <CardTitle className="text-2xl font-bold">Municipality Head & Co</CardTitle>
               <CardDescription className="text-lg">Municipal workers and officials</CardDescription>
