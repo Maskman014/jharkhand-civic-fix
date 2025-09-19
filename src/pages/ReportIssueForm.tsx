@@ -83,7 +83,7 @@ const ReportIssueForm = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.description.trim()) {
@@ -104,6 +104,16 @@ const ReportIssueForm = () => {
       return;
     }
 
+    // Convert photo to base64 if present
+    let photoData = null;
+    if (formData.photo) {
+      const reader = new FileReader();
+      photoData = await new Promise((resolve) => {
+        reader.onload = (e) => resolve(e.target?.result);
+        reader.readAsDataURL(formData.photo!);
+      });
+    }
+
     // Store the report (in a real app, this would go to a database)
     const report = {
       id: Date.now(),
@@ -112,7 +122,7 @@ const ReportIssueForm = () => {
       problemName: formData.problemName,
       description: formData.description,
       location: formData.location,
-      photo: formData.photo?.name || null,
+      photo: photoData,
       status: 'Pending',
       dateReported: new Date().toLocaleDateString(),
       timeReported: new Date().toLocaleTimeString()

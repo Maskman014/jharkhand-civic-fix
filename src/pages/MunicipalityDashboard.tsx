@@ -222,13 +222,22 @@ const MunicipalityDashboard = () => {
                         {getPriorityIcon(report.problemName)}
                         <span className="ml-2">Problem Details</span>
                       </h4>
-                      <div className="space-y-1 text-sm">
+                      <div className="space-y-2 text-sm">
                         <div className="font-medium text-gray-900">{report.problemName}</div>
                         <div className="text-gray-600 line-clamp-2">{report.description}</div>
                         <div className="flex items-center text-gray-500">
                           <MapPin className="h-3 w-3 mr-1" />
                           <span className="truncate">{report.location}</span>
                         </div>
+                        {report.photo && (
+                          <div className="mt-2">
+                            <img 
+                              src={report.photo} 
+                              alt="Issue photo" 
+                              className="w-full h-32 object-cover rounded border border-gray-200"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
 
