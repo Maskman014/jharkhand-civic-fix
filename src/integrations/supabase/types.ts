@@ -14,7 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          address: string | null
+          auto_description: string | null
+          auto_rejected: boolean | null
+          category: string
+          coordinates: Json | null
+          created_at: string
+          description: string
+          duplicate_of: string | null
+          fraud_reasons: string[] | null
+          fraud_score: number | null
+          id: string
+          image_objects: Json | null
+          images: string[] | null
+          ocr_text: string | null
+          priority: string
+          priority_score: number | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          auto_description?: string | null
+          auto_rejected?: boolean | null
+          category: string
+          coordinates?: Json | null
+          created_at?: string
+          description: string
+          duplicate_of?: string | null
+          fraud_reasons?: string[] | null
+          fraud_score?: number | null
+          id?: string
+          image_objects?: Json | null
+          images?: string[] | null
+          ocr_text?: string | null
+          priority?: string
+          priority_score?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          auto_description?: string | null
+          auto_rejected?: boolean | null
+          category?: string
+          coordinates?: Json | null
+          created_at?: string
+          description?: string
+          duplicate_of?: string | null
+          fraud_reasons?: string[] | null
+          fraud_score?: number | null
+          id?: string
+          image_objects?: Json | null
+          images?: string[] | null
+          ocr_text?: string | null
+          priority?: string
+          priority_score?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_duplicate_of_fkey"
+            columns: ["duplicate_of"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
