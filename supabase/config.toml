@@ -1,1 +1,4 @@
 project_id = "xdmhxyqkwfaunmbbqadv"
+
+[functions.civic-fix-assistant]
+verify_jwt = false

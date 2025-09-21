@@ -5,14 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Camera, Send, CheckCircle } from "lucide-react";
+import { MapPin, Camera, Send, CheckCircle, Brain } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { toast } from "sonner";
+import { useAIAssistant } from "@/hooks/useAIAssistant";
+import { supabase } from "@/integrations/supabase/client";
 import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const ReportIssue = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [aiResponse, setAiResponse] = useState<any>(null);
+  const { reportNewIssue, loading: aiLoading } = useAIAssistant();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -70,12 +74,47 @@ const ReportIssue = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast("Issue reported successfully! We'll keep you updated on the progress.");
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast("Please log in to submit a report");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Process with AI Assistant
+      const response = await reportNewIssue({
+        title: formData.title,
+        description: formData.description,
+        address: formData.location,
+        user_id: user.id,
+        images: formData.photo ? [formData.photo.name] : []
+      });
+
+      setAiResponse(response);
+      
+      if (response.status === "success") {
+        setIsSubmitted(true);
+        toast(`Issue reported successfully! Category: ${response.category}, Priority: ${response.priority}`);
+        
+        if (response.duplicate) {
+          toast(`Note: This appears to be similar to an existing report (ID: ${response.duplicate_of})`);
+        }
+        
+        if (response.fraud_score > 0.5) {
+          toast("Your report is being reviewed for accuracy");
+        }
+      } else {
+        toast(`Error: ${response.error_message}`);
+      }
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      toast("Failed to submit report. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {

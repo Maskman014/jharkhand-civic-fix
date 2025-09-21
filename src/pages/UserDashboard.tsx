@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Construction, Trash2, Lightbulb, Droplets, AlertTriangle, Users } from "lucide-react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, LogOut } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import potholeImg from "@/assets/pothole-issue.jpg";
 import garbageImg from "@/assets/garbage-issue.jpg";
 import streetlightImg from "@/assets/streetlight-issue.jpg";
@@ -14,7 +16,28 @@ import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        // Get user profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setProfile(profile);
+      } else {
+        navigate('/login');
+      }
+    };
+
+    getUser();
+  }, [navigate]);
 
   const civicIssues = [
     {
@@ -79,8 +102,9 @@ const UserDashboard = () => {
     navigate(`/report-issue/${issueId}`, { state: { issueName } });
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('user');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success('Logged out successfully');
     navigate('/');
   };
 
@@ -100,11 +124,12 @@ const UserDashboard = () => {
           <div className="flex justify-between items-center h-20">
             <div>
               <h1 className="text-2xl font-bold text-primary">
-                Welcome, {user.name || 'Citizen'}
+                Welcome, {profile?.name || user?.email || 'User'}
               </h1>
               <p className="text-base text-muted-foreground">Report civic issues in your area</p>
             </div>
-            <Button variant="outline" onClick={handleLogout} className="h-12 px-6 text-base">
+            <Button variant="outline" onClick={handleLogout} className="h-12 px-6 text-base flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
               Logout
             </Button>
           </div>
