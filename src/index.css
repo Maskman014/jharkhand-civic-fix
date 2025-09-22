@@ -9,50 +9,51 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 215 25% 27%;
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 0 0% 10%;
 
-    /* Government Blue - Official and trustworthy */
-    --primary: 221 83% 53%;
+    /* Government Dark Green - Primary brand color of Jharkhand */
+    --primary: 142 69% 26%;
     --primary-foreground: 0 0% 100%;
-    --primary-dark: 221 83% 43%;
+    --primary-dark: 142 75% 20%;
 
-    /* Light Government Blue - Secondary actions */
-    --secondary: 221 32% 91%;
-    --secondary-foreground: 221 25% 27%;
+    /* Government Saffron - Secondary color */
+    --secondary: 32 95% 44%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Neutral - Muted content */
-    --muted: 221 40% 96%;
-    --muted-foreground: 221 16% 47%;
+    /* Light neutral backgrounds */
+    --muted: 60 9% 98%;
+    --muted-foreground: 25 5% 45%;
 
-    /* Government Green - Success/Resolution */
-    --accent: 142 71% 45%;
+    /* Accent green for success states */
+    --accent: 142 69% 26%;
     --accent-foreground: 0 0% 100%;
 
-    /* Government Orange - Urgent issues */
+    /* Saffron for warnings and highlights */
     --warning: 32 95% 44%;
     --warning-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 221 32% 91%;
-    --input: 221 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 20 6% 90%;
+    --input: 20 6% 90%;
+    --ring: 142 69% 26%;
 
     /* Government gradients and effects */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-dark)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-government: linear-gradient(135deg, hsl(142 69% 26%), hsl(32 95% 44%));
     --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.15);
     --shadow-card: 0 2px 15px hsl(var(--primary) / 0.12);
     --shadow-government: 0 8px 32px hsl(var(--primary) / 0.2);
     
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
 

@@ -1,365 +1,368 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Users, Building2 } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, UserCheck, Building, Shield, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
+import Navigation from "@/components/Navigation";
 
 const UnifiedLogin = () => {
-  const [activeForm, setActiveForm] = useState<string | null>(null);
-  const [showPasswordForm, setShowPasswordForm] = useState<{ type: string; userId: string } | null>(null);
-  const [citizenData, setCitizenData] = useState({ username: '', phone: '' });
-  const [adminUserId, setAdminUserId] = useState('');
-  const [municipalUserId, setMunicipalUserId] = useState('');
-  const [password, setPassword] = useState('');
-  
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  
+  const userType = searchParams.get("type") || "citizen";
+  
+  // Citizen form state
+  const [citizenForm, setCitizenForm] = useState({
+    name: "",
+    phone: ""
+  });
+  
+  // Admin/Municipality form state
+  const [officialForm, setOfficialForm] = useState({
+    userId: "",
+    password: "",
+    confirmPassword: ""
+  });
+  
+  const [isSignup, setIsSignup] = useState(false);
 
-  const handleCitizenLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (citizenData.username && citizenData.phone) {
-      // Store citizen data in sessionStorage for use across pages
-      sessionStorage.setItem('user', JSON.stringify({ 
-        role: 'citizen', 
-        name: citizenData.username, 
-        phone: citizenData.phone 
-      }));
-      toast({ title: "Login Successful", description: "Welcome to the civic reporting system!" });
-      navigate('/user-dashboard');
-    }
-  };
-
-  const handleAdminUserIdSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminUserId) {
-      sessionStorage.setItem('user', JSON.stringify({ 
-        role: 'admin', 
-        userId: adminUserId 
-      }));
-      toast({ title: "Admin Login Successful", description: "Welcome to admin dashboard!" });
-      navigate('/admin-dashboard');
-    }
-  };
-
-  const handleMunicipalUserIdSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (municipalUserId) {
-      setShowPasswordForm({ type: 'municipal', userId: municipalUserId });
-    }
-  };
-
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password && showPasswordForm) {
-      if (showPasswordForm.type === 'admin') {
-        sessionStorage.setItem('user', JSON.stringify({ 
-          role: 'admin', 
-          userId: showPasswordForm.userId 
-        }));
-        toast({ title: "Admin Login Successful", description: "Welcome to admin dashboard!" });
-        navigate('/admin-dashboard');
-      } else if (showPasswordForm.type === 'municipal') {
-        sessionStorage.setItem('user', JSON.stringify({ 
-          role: 'municipal', 
-          userId: showPasswordForm.userId 
-        }));
-        toast({ title: "Municipal Login Successful", description: "Welcome to municipal dashboard!" });
-        navigate('/municipality-dashboard');
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+          
+        if (profile) {
+          redirectBasedOnRole(profile.role);
+        }
       }
+    };
+    
+    checkAuth();
+  }, []);
+
+  const redirectBasedOnRole = (role: string) => {
+    switch (role) {
+      case 'citizen':
+        navigate('/issues');
+        break;
+      case 'admin':
+        navigate('/admin-dashboard');
+        break;
+      case 'municipality':
+        navigate('/municipality-dashboard');
+        break;
+      default:
+        navigate('/dashboard');
     }
   };
 
-  const handleBackToUserIdForm = () => {
-    setShowPasswordForm(null);
-    setPassword('');
+  const handleCitizenLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!citizenForm.name.trim() || !citizenForm.phone.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both name and phone number.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // For citizen login, we'll create a temporary email and password
+      const email = `${citizenForm.phone}@citizen.jharkhand.gov.in`;
+      const password = `citizen_${citizenForm.phone}`;
+
+      // Try to sign in first
+      let { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      // If sign in fails, create new account
+      if (signInError) {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name: citizenForm.name,
+              phone: citizenForm.phone,
+              role: 'citizen'
+            }
+          }
+        });
+
+        if (signUpError) throw signUpError;
+        signInData = signUpData;
+      }
+
+      toast({
+        title: "Login Successful",
+        description: `Welcome, ${citizenForm.name}! Redirecting to issues page...`
+      });
+
+      setTimeout(() => {
+        navigate('/issues');
+      }, 1500);
+
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "An error occurred during login.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // If showing password form, render that instead
-  if (showPasswordForm) {
-    return (
-      <div 
-        className="min-h-screen relative"
-        style={{
-          backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed'
-        }}
-      >
-        {/* Navigation Bar */}
-        <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-primary/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-20 items-center">
-              <div className="flex items-center space-x-4">
-                <div className="bg-primary p-2 rounded-lg">
-                  <Shield className="h-10 w-10 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-primary">Government of Jharkhand</h1>
-                  <p className="text-sm text-muted-foreground">Civic Issue Reporting Portal</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
+  const handleOfficialAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!officialForm.userId.trim() || !officialForm.password.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both User ID and password.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-        <div className="max-w-md mx-auto px-4 py-16">
-          <Card className="bg-white/95 backdrop-blur-sm border-2 border-white/20">
-            <CardHeader className="text-center">
-              <div className={`mx-auto w-20 h-20 ${showPasswordForm.type === 'admin' ? 'bg-primary/20 border-primary' : 'bg-warning/20 border-warning'} border-2 rounded-full flex items-center justify-center mb-4`}>
-                {showPasswordForm.type === 'admin' ? 
-                  <Shield className="h-10 w-10 text-primary" /> : 
-                  <Building2 className="h-10 w-10 text-warning" />
-                }
-              </div>
-              <CardTitle className="text-2xl font-bold">
-                {showPasswordForm.type === 'admin' ? 'Administrator' : 'Municipality Head & Co'}
-              </CardTitle>
-              <CardDescription className="text-lg">
-                Welcome, {showPasswordForm.userId}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handlePasswordSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="password" className="text-base font-semibold">Password</Label>
-                  <Input 
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="h-12 text-lg"
-                    placeholder="Enter your Password"
-                    autoFocus
-                  />
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    type="submit" 
-                    className={`flex-1 h-12 text-lg ${showPasswordForm.type === 'admin' ? 'bg-primary hover:bg-primary-dark' : 'bg-warning hover:bg-warning/90'}`}
-                  >
-                    Login
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={handleBackToUserIdForm}
-                    className="flex-1 h-12 text-lg"
-                  >
-                    Back
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+    if (isSignup && officialForm.password !== officialForm.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match.",
+        variant: "destructive"
+      });
+      return;
+    }
 
+    setLoading(true);
+    try {
+      const email = `${officialForm.userId}@${userType}.jharkhand.gov.in`;
+      const role = userType === 'admin' ? 'admin' : 'municipality';
+
+      if (isSignup) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password: officialForm.password,
+          options: {
+            data: {
+              name: officialForm.userId,
+              role: role
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Account Created",
+          description: "Your account has been created successfully. Please check your email to verify your account.",
+        });
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password: officialForm.password
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Login Successful",
+          description: `Welcome! Redirecting to ${userType} dashboard...`
+        });
+
+        setTimeout(() => {
+          redirectBasedOnRole(role);
+        }, 1500);
+      }
+
+    } catch (error: any) {
+      toast({
+        title: isSignup ? "Signup Failed" : "Login Failed",
+        description: error.message || `An error occurred during ${isSignup ? 'signup' : 'login'}.`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getPortalInfo = (type: string) => {
+    const portals = {
+      citizen: {
+        title: "Citizen Portal",
+        icon: Users,
+        color: "accent",
+        description: "Report civic issues in your area with simple name and phone registration."
+      },
+      admin: {
+        title: "Administrator Portal", 
+        icon: UserCheck,
+        color: "primary",
+        description: "Manage and oversee all civic issues across Jharkhand state."
+      },
+      municipality: {
+        title: "Municipality Portal",
+        icon: Building, 
+        color: "secondary",
+        description: "Municipal heads and coordinators managing local area issues."
+      }
+    };
+    return portals[type as keyof typeof portals];
+  };
+
+  const portalInfo = getPortalInfo(userType);
+  const PortalIcon = portalInfo.icon;
 
   return (
-    <div 
-      className="min-h-screen relative"
-      style={{
-        backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url(${jharkhandBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Navigation Bar */}
-      <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-primary/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
-            <div className="flex items-center space-x-4">
-              <div className="bg-primary p-2 rounded-lg">
-                <Shield className="h-10 w-10 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-primary">Government of Jharkhand</h1>
-                <p className="text-sm text-muted-foreground">Civic Issue Reporting Portal</p>
-              </div>
-            </div>
-            <div className="hidden md:flex space-x-6">
-              <a href="/" className="text-foreground hover:text-primary px-4 py-2 text-base font-medium transition-colors">Home</a>
-              <a href="/about" className="text-foreground hover:text-primary px-4 py-2 text-base font-medium transition-colors">About Us</a>
-              <a href="/help" className="text-foreground hover:text-primary px-4 py-2 text-base font-medium transition-colors">Help</a>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto">
+          <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Link>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-16">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8">
-            <h1 className="text-5xl font-bold text-white mb-6">
-              Jharkhand Civic Issue Reporting System
-            </h1>
-            <h2 className="text-2xl font-medium text-white/90 mb-4">
-              Government of Jharkhand Official Portal
-            </h2>
-            <p className="text-xl text-white/80 max-w-4xl mx-auto">
-              Report civic issues, track progress, and help improve our communities together.<br/>
-              <span className="text-lg text-white/70">This portal is accessible to all citizens of Jharkhand</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Login Options */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          
-          {/* Citizen Login */}
-          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-2 border-white/20">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-accent/20 border-2 border-accent rounded-full flex items-center justify-center mb-4">
-                <Users className="h-8 w-8 text-accent" />
+          <Card className="border-2 shadow-lg">
+            <CardHeader className="text-center pb-4">
+              <div className={`w-20 h-20 bg-gradient-to-br from-${portalInfo.color} to-${portalInfo.color}/80 rounded-full flex items-center justify-center mx-auto mb-4`}>
+                <PortalIcon className={`h-10 w-10 text-${portalInfo.color}-foreground`} />
               </div>
-              <CardTitle className="text-2xl font-bold">Citizen / User</CardTitle>
-              <CardDescription className="text-lg">Report civic issues in your area</CardDescription>
+              <CardTitle className="text-2xl font-bold">{portalInfo.title}</CardTitle>
+              <p className="text-muted-foreground">{portalInfo.description}</p>
             </CardHeader>
+            
             <CardContent>
-              {activeForm !== 'citizen' ? (
-                <Button 
-                  className="w-full" 
-                  onClick={() => setActiveForm('citizen')}
-                >
-                  Login as Citizen
-                </Button>
-              ) : (
+              {userType === 'citizen' ? (
                 <form onSubmit={handleCitizenLogin} className="space-y-4">
                   <div>
-                    <Label htmlFor="citizen-username">Username</Label>
-                    <Input 
-                      id="citizen-username"
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
                       type="text"
-                      value={citizenData.username}
-                      onChange={(e) => setCitizenData({...citizenData, username: e.target.value})}
+                      placeholder="Enter your full name"
+                      value={citizenForm.name}
+                      onChange={(e) => setCitizenForm({ ...citizenForm, name: e.target.value })}
                       required
                     />
                   </div>
+                  
                   <div>
-                    <Label htmlFor="citizen-phone">Phone Number</Label>
-                    <Input 
-                      id="citizen-phone"
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
                       type="tel"
-                      value={citizenData.phone}
-                      onChange={(e) => setCitizenData({...citizenData, phone: e.target.value})}
+                      placeholder="Enter your phone number"
+                      value={citizenForm.phone}
+                      onChange={(e) => setCitizenForm({ ...citizenForm, phone: e.target.value })}
                       required
                     />
                   </div>
-                  <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1">Login</Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setActiveForm(null)}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Logging in..." : "Login as Citizen"}
+                  </Button>
                 </form>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Admin Login */}
-          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-2 border-white/20">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-primary/20 border-2 border-primary rounded-full flex items-center justify-center mb-4">
-                <Shield className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Administrator</CardTitle>
-              <CardDescription className="text-lg">System administration and oversight</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {activeForm !== 'admin' ? (
-                <Button 
-                  className="w-full" 
-                  onClick={() => setActiveForm('admin')}
-                >
-                  Login as Admin
-                </Button>
               ) : (
-                <form onSubmit={handleAdminUserIdSubmit} className="space-y-6">
-                  <div>
-                    <Label htmlFor="admin-userid" className="text-base font-semibold">User ID</Label>
-                    <Input 
-                      id="admin-userid"
-                      type="text"
-                      value={adminUserId}
-                      onChange={(e) => setAdminUserId(e.target.value)}
-                      required
-                      className="h-12 text-lg"
-                      placeholder="Enter your User ID"
-                    />
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark">Continue</Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setActiveForm(null)}
-                      className="flex-1 h-12 text-lg"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Municipality Login */}
-          <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 bg-white/95 backdrop-blur-sm border-2 border-white/20">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-warning/20 border-2 border-warning rounded-full flex items-center justify-center mb-4">
-                <Building2 className="h-8 w-8 text-warning" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Municipality Head & Co</CardTitle>
-              <CardDescription className="text-lg">Municipal workers and officials</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {activeForm !== 'municipal' ? (
-                <Button 
-                  className="w-full" 
-                  onClick={() => setActiveForm('municipal')}
-                >
-                  Login as Municipal Worker
-                </Button>
-              ) : (
-                <form onSubmit={handleMunicipalUserIdSubmit} className="space-y-6">
-                  <div>
-                    <Label htmlFor="municipal-userid" className="text-base font-semibold">User ID</Label>
-                    <Input 
-                      id="municipal-userid"
-                      type="text"
-                      value={municipalUserId}
-                      onChange={(e) => setMunicipalUserId(e.target.value)}
-                      required
-                      className="h-12 text-lg"
-                      placeholder="Enter your User ID"
-                    />
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button type="submit" className="flex-1 h-12 text-lg bg-warning hover:bg-warning/90">Continue</Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setActiveForm(null)}
-                      className="flex-1 h-12 text-lg"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
+                <Tabs value={isSignup ? "signup" : "login"} onValueChange={(value) => setIsSignup(value === "signup")}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="login">Login</TabsTrigger>
+                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="login" className="space-y-4">
+                    <form onSubmit={handleOfficialAuth} className="space-y-4">
+                      <div>
+                        <Label htmlFor="userId">User ID</Label>
+                        <Input
+                          id="userId"
+                          type="text"
+                          placeholder="Enter your User ID"
+                          value={officialForm.userId}
+                          onChange={(e) => setOfficialForm({ ...officialForm, userId: e.target.value })}
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={officialForm.password}
+                          onChange={(e) => setOfficialForm({ ...officialForm, password: e.target.value })}
+                          required
+                        />
+                      </div>
+                      
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Logging in..." : `Login to ${portalInfo.title}`}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="signup" className="space-y-4">
+                    <form onSubmit={handleOfficialAuth} className="space-y-4">
+                      <div>
+                        <Label htmlFor="newUserId">User ID</Label>
+                        <Input
+                          id="newUserId"
+                          type="text"
+                          placeholder="Choose a User ID"
+                          value={officialForm.userId}
+                          onChange={(e) => setOfficialForm({ ...officialForm, userId: e.target.value })}
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="newPassword">Password</Label>
+                        <Input
+                          id="newPassword"
+                          type="password"
+                          placeholder="Create a password"
+                          value={officialForm.password}
+                          onChange={(e) => setOfficialForm({ ...officialForm, password: e.target.value })}
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="Confirm your password"
+                          value={officialForm.confirmPassword}
+                          onChange={(e) => setOfficialForm({ ...officialForm, confirmPassword: e.target.value })}
+                          required
+                        />
+                      </div>
+                      
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Creating Account..." : `Create ${portalInfo.title} Account`}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
               )}
             </CardContent>
           </Card>

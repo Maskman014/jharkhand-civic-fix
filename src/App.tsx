@@ -16,6 +16,7 @@ import MunicipalityDashboard from "./pages/MunicipalityDashboard";
 import ReportIssue from "./pages/ReportIssue";
 import ReportIssueForm from "./pages/ReportIssueForm";
 import IssueDetail from "./pages/IssueDetail";
+import IssuesList from "./pages/IssuesList";
 import Map from "./pages/Map";
 import HelpPage from "./pages/HelpPage";
 import NotFound from "./pages/NotFound";
@@ -65,7 +66,8 @@ function App() {
             <Route path="/admin-dashboard" element={session ? <AdminDashboard /> : <UnifiedLogin />} />
             <Route path="/municipality-dashboard" element={session ? <MunicipalityDashboard /> : <UnifiedLogin />} />
             <Route path="/report" element={<ReportIssue />} />
-            <Route path="/report-issue/:issueType" element={<ReportIssueForm />} />
+            <Route path="/issues" element={session ? <IssuesList /> : <UnifiedLogin />} />
+            <Route path="/report-issue/:issueType" element={session ? <ReportIssueForm /> : <UnifiedLogin />} />
             <Route path="/issue/:id" element={<IssueDetail />} />
             <Route path="/map" element={<Map />} />
             <Route path="/help" element={<HelpPage />} />
