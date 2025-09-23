@@ -64,29 +64,46 @@ const UnifiedLogin = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // First, try to find existing citizen
+      const { data: existingCitizen, error: findError } = await (supabase as any)
         .from("citizens")
         .select("*")
         .eq("name", citizenForm.name)
         .eq("phone", citizenForm.phone)
-        .single();
+        .maybeSingle();
 
-      if (error || !data) {
-        toast({
-          title: "Login Failed",
-          description: "Invalid name or phone number.",
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Login Successful",
-          description: `Welcome, ${citizenForm.name}! Redirecting to issues page...`
-        });
-        localStorage.setItem("citizen", JSON.stringify(data));
-        setTimeout(() => {
-          redirectBasedOnRole("citizen");
-        }, 1000);
+      if (findError && findError.code !== 'PGRST116') {
+        throw findError;
       }
+
+      let citizenData = existingCitizen;
+
+      // If citizen doesn't exist, create one
+      if (!existingCitizen) {
+        const { data: newCitizen, error: createError } = await (supabase as any)
+          .from("citizens")
+          .insert([{ name: citizenForm.name, phone: citizenForm.phone }])
+          .select()
+          .single();
+
+        if (createError) throw createError;
+        citizenData = newCitizen;
+      }
+
+      toast({
+        title: "Login Successful",
+        description: `Welcome, ${citizenForm.name}! Redirecting to issues page...`
+      });
+      localStorage.setItem("citizen", JSON.stringify(citizenData));
+      setTimeout(() => {
+        redirectBasedOnRole("citizen");
+      }, 1000);
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Unable to login. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -118,24 +135,31 @@ const UnifiedLogin = () => {
       const table = userType === "admin" ? "admins" : "municipality_users";
 
       if (isSignup) {
-        const { error } = await supabase.from(table).insert([
-          { user_id: officialForm.userId, password: officialForm.password }
-        ]);
+        const insertData = userType === "admin" 
+          ? { user_id: officialForm.userId, password: officialForm.password }
+          : { user_id: officialForm.userId, password: officialForm.password, municipality: "Default Municipality" };
+
+        const { error } = await (supabase as any).from(table).insert([insertData]);
         if (error) throw error;
 
         toast({
           title: "Account Created",
           description: "Your account has been created successfully."
         });
+        setIsSignup(false); // Switch to login mode after successful signup
       } else {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from(table)
           .select("*")
           .eq("user_id", officialForm.userId)
           .eq("password", officialForm.password)
-          .single();
+          .maybeSingle();
 
-        if (error || !data) {
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        if (!data) {
           toast({
             title: "Login Failed",
             description: "Invalid User ID or password.",
@@ -152,6 +176,12 @@ const UnifiedLogin = () => {
           }, 1000);
         }
       }
+    } catch (error: any) {
+      toast({
+        title: isSignup ? "Signup Failed" : "Login Failed",
+        description: error.message || "Unable to authenticate. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
