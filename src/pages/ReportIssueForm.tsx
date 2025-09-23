@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Camera, ArrowLeft, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import jharkhandBg from "@/assets/jharkhand-govt-bg.jpg";
 
 const ReportIssueForm = () => {
@@ -22,7 +23,19 @@ const ReportIssueForm = () => {
   };
   
   const issueName = location.state?.issueName || formatIssueName(issueId || 'issue');
-  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  // Get user data from localStorage (matching the login system)
+  const getUserData = () => {
+    const citizenData = localStorage.getItem('citizen');
+    const adminData = localStorage.getItem('admin');
+    const municipalityData = localStorage.getItem('municipality');
+    
+    if (citizenData) return JSON.parse(citizenData);
+    if (adminData) return JSON.parse(adminData);
+    if (municipalityData) return JSON.parse(municipalityData);
+    return {};
+  };
+  
+  const user = getUserData();
   
   const [formData, setFormData] = useState({
     problemName: issueName,
@@ -114,24 +127,32 @@ const ReportIssueForm = () => {
       });
     }
 
-    // Store the report (in a real app, this would go to a database)
-    const report = {
-      id: Date.now(),
-      citizenName: user.name,
-      citizenPhone: user.phone,
-      problemName: formData.problemName,
-      description: formData.description,
-      location: formData.location,
-      photo: photoData,
-      status: 'Pending',
-      dateReported: new Date().toLocaleDateString(),
-      timeReported: new Date().toLocaleTimeString()
-    };
+    // Store the report to Supabase database
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .insert([{
+          title: formData.problemName,
+          description: formData.description,
+          address: formData.location,
+          category: 'General', // Default category
+          priority: 'medium', // Default priority
+          status: 'pending',
+          images: photoData ? [photoData as string] : []
+        }])
+        .select();
 
-    // Store in localStorage (mock database)
-    const existingReports = JSON.parse(localStorage.getItem('civicReports') || '[]');
-    existingReports.push(report);
-    localStorage.setItem('civicReports', JSON.stringify(existingReports));
+      if (error) throw error;
+
+      console.log('Report saved:', data);
+    } catch (error: any) {
+      console.error('Error saving report:', error);
+      toast({
+        title: "Error saving report",
+        description: "Report saved locally but couldn't sync to server.",
+        variant: "destructive"
+      });
+    }
 
     setIsSubmitted(true);
   };
@@ -171,6 +192,7 @@ const ReportIssueForm = () => {
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="text-sm text-blue-800">
                 <strong>Issue:</strong> {formData.problemName}<br />
+                <strong>Reporter:</strong> {user.name || user.user_id}<br />
                 <strong>Submitted:</strong> {new Date().toLocaleString()}<br />
                 <strong>Status:</strong> Pending Review
               </p>
@@ -321,8 +343,9 @@ const ReportIssueForm = () => {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-2">Reporter Information:</h4>
                 <p className="text-sm text-gray-600">
-                  <strong>Name:</strong> {user.name}<br />
-                  <strong>Phone:</strong> {user.phone}
+                  <strong>Name:</strong> {user.name || user.user_id || 'Not specified'}<br />
+                  {user.phone && <><strong>Phone:</strong> {user.phone}<br /></>}
+                  {user.municipality && <><strong>Municipality:</strong> {user.municipality}</>}
                 </p>
               </div>
 

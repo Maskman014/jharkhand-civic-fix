@@ -40,8 +40,13 @@ const IssuesList = () => {
 
   const checkAuthAndFetchIssues = async () => {
     try {
+      // Check for both Supabase session and local auth
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const citizenData = localStorage.getItem('citizen');
+      const adminData = localStorage.getItem('admin');
+      const municipalityData = localStorage.getItem('municipality');
+      
+      if (!session && !citizenData && !adminData && !municipalityData) {
         toast({
           title: "Authentication Required",
           description: "Please login to view issues.",

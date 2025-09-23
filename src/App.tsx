@@ -26,9 +26,23 @@ const queryClient = new QueryClient();
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [localAuth, setLocalAuth] = useState<any>(null);
 
   useEffect(() => {
-    // Get initial session
+    // Check for local storage auth (for citizen/admin/municipality login)
+    const citizenData = localStorage.getItem('citizen');
+    const adminData = localStorage.getItem('admin');
+    const municipalityData = localStorage.getItem('municipality');
+    
+    if (citizenData) {
+      setLocalAuth({ type: 'citizen', data: JSON.parse(citizenData) });
+    } else if (adminData) {
+      setLocalAuth({ type: 'admin', data: JSON.parse(adminData) });
+    } else if (municipalityData) {
+      setLocalAuth({ type: 'municipality', data: JSON.parse(municipalityData) });
+    }
+
+    // Also check for Supabase session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
@@ -42,6 +56,8 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const isAuthenticated = session || localAuth;
 
   if (loading) {
     return (
@@ -61,13 +77,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<UnifiedLogin />} />
-            <Route path="/dashboard" element={session ? <UserDashboard /> : <UnifiedLogin />} />
-            <Route path="/user-dashboard" element={session ? <UserDashboard /> : <UnifiedLogin />} />
-            <Route path="/admin-dashboard" element={session ? <AdminDashboard /> : <UnifiedLogin />} />
-            <Route path="/municipality-dashboard" element={session ? <MunicipalityDashboard /> : <UnifiedLogin />} />
+            <Route path="/dashboard" element={isAuthenticated ? <UserDashboard /> : <UnifiedLogin />} />
+            <Route path="/user-dashboard" element={isAuthenticated ? <UserDashboard /> : <UnifiedLogin />} />
+            <Route path="/admin/dashboard" element={isAuthenticated ? <AdminDashboard /> : <UnifiedLogin />} />
+            <Route path="/municipality/dashboard" element={isAuthenticated ? <MunicipalityDashboard /> : <UnifiedLogin />} />
             <Route path="/report" element={<ReportIssue />} />
-            <Route path="/issues" element={session ? <IssuesList /> : <UnifiedLogin />} />
-            <Route path="/report-issue/:issueType" element={session ? <ReportIssueForm /> : <UnifiedLogin />} />
+            <Route path="/issues" element={isAuthenticated ? <IssuesList /> : <UnifiedLogin />} />
+            <Route path="/report-issue/:issueType" element={isAuthenticated ? <ReportIssueForm /> : <UnifiedLogin />} />
             <Route path="/issue/:id" element={<IssueDetail />} />
             <Route path="/map" element={<Map />} />
             <Route path="/help" element={<HelpPage />} />
